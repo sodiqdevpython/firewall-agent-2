@@ -1,0 +1,6 @@
+{
+  "BackendUrl": "http://localhost:8000/applications/applications/", => aniq post uchun url
+  "IgnoredIps": ["127.0.0.1", "192.168.0.1"], istalgancha list
+  "DelaySeconds": 5, sekundlarda o'lchanadi
+  "Status": "stop" # run va stop
+}
