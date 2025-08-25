@@ -67,7 +67,7 @@ class FirewallManager:
         if remoteport and remoteport != "Any":
             ps_command += f' -RemotePort {remoteport}'
 
-        if program:  # faqat bo‘lsa qo‘shamiz
+        if program:
             ps_command += f' -Program "{program}"'
 
         if description:

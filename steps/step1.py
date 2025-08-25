@@ -16,12 +16,13 @@ class Step1:
         device = Device()
         response = requests.get(f'http://localhost:8000/hosts/devices/?bios_uuid={device.get_windows_bios_uuid()}')
         data = response.json()
+        device_id = data['results'][0]['id']
         if data['results'] and data['count']==1:
             print("Bor")
-            # patch_ip = requests.patch(f"http://localhost:8000/hosts/devices/{device.get_windows_bios_uuid()}", data={
-            #     'ip_address': str(device.get_device()['ip_address'])
-            # })
-            # print(patch_ip)
+            patch_ip = requests.patch(f"http://localhost:8000/hosts/devices/{device_id}/", data={
+                'ip_address': str(device.find_my_global_ip())
+            })
+            print(patch_ip)
         else:
             print("Yo'q create qilinayabdi")
             send_new_device = requests.post('http://localhost:8000/hosts/devices/', data=device.get_device())
