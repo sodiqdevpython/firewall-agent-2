@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 class Program
 {
     private static string configPath = Path.Combine(
-    Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName, 
+    AppDomain.CurrentDomain.BaseDirectory,
     "config.json"
 );
     private static Config config = new Config();
@@ -74,6 +74,12 @@ class Program
                     using var content = new StringContent(finalJson, Encoding.UTF8, "application/json");
                     using var response = await httpClient.PostAsync(backendUrl, content);
                     Console.WriteLine($"🌐 POST status: {response.StatusCode}");
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine($"❌ Xato: {response.ReasonPhrase}");
+                        Console.WriteLine($"📩 Server javobi: {errorMessage}");
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -185,7 +191,7 @@ class Program
 /// </summary>
 public class Config
 {
-    public string BackendUrl { get; set; } = "http://localhost:8000/applications/applications/";
+    public string BackendUrl { get; set; } = "http://94.141.85.114:4555/applications/applications/";
     public string[] IgnoredIps { get; set; } = new string[] { "127.0.0.1" };
     public int DelaySeconds { get; set; } = 5;
     public string Status { get; set; } = "run";

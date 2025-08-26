@@ -1,17 +1,24 @@
-# main.py
 from steps.step1 import Step1
 from steps.step2 import Step2
-import time
-import threading
+import os, sys
+import subprocess
 import asyncio
 import json
 import websockets
 from components.GetDeviceInfo import Device
-# from components.TrafficMonitor import TrafficMonitor
 from components.Firewall import FirewallManager
 
+def resource_path(relative_path):
+    if getattr(sys, 'frozen', False):  # exe rejimi
+        base_dir = os.path.dirname(sys.executable)
+    else:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base_dir, relative_path)
+
+exe_path = resource_path(os.path.join("publish", "agent2.exe"))
+
 async def firewall_listener(device_bios: str):
-    ws_url = f"ws://localhost:8000/ws/device/fire_wall/{device_bios}/"
+    ws_url = f"ws://94.141.85.114:4555/ws/device/fire_wall/{device_bios}/"
     print(f"[Firewall WS] Ulanmoqda: {ws_url}")
     fw = FirewallManager()
 
@@ -97,14 +104,14 @@ def run():
         step1.get_device_from_server()
         print("[Main] Step1 tugadi")
 
-        ws_url = f"ws://localhost:8000/ws/device/{device_bios}/"
+        ws_url = f"ws://94.141.85.114:4555/ws/device/{device_bios}/"
         step2 = Step2(ws_url, device_bios)
         step2.run_in_thread()
 
-        # TrafficMonitor alohida threadda
-        # threading.Thread(target=run_traffic_monitor, args=(device_bios,), daemon=True).start()
+        agent_proc = subprocess.Popen([exe_path])
+        print("[Main] agent2.exe ishga tushdi")
 
-        # Asosiy thread firewall rules ws listener bo‘ladi
+        # Asosiy thread firewall rules ws listener hozirgi holat uchun
         asyncio.run(firewall_listener(device_bios))
 
     except Exception as e:

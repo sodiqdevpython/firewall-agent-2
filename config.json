@@ -1,5 +1,5 @@
 {
-  "BackendUrl": "http://localhost:8000/applications/applications/",
+  "BackendUrl": "http://94.141.85.114:4555/applications/applications/",
   "IgnoredIps": ["127.0.0.1", "192.168.0.1"],
   "DelaySeconds": 5,
   "Status": "run"

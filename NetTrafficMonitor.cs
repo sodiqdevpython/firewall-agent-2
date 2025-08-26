@@ -75,6 +75,8 @@ namespace NetTrafficMonitor
         /// <summary>
         /// Oxirgi n sekunddagi trafikni JSON ko'rinishda qaytaradi (bulk list).
         /// </summary>
+        
+        
         public static string GetTrafficInfo(int lastSeconds = 5)
         {
             DateTime cutoff = DateTime.UtcNow.AddSeconds(-lastSeconds);
@@ -121,7 +123,7 @@ namespace NetTrafficMonitor
 
                 ps.TotalBytes += size;
                 if (direction == "Inbound") ps.Received += size;
-                else ps.Sent += size;
+                else if (direction == "Outbound") ps.Sent += size;
 
                 ps.Connections.Add(new ConnectionInfo
                 {
@@ -147,7 +149,7 @@ namespace NetTrafficMonitor
         [JsonPropertyName("name")]
         public string Name { get; set; }
 
-        // JSONda "image_path" bo'lib chiqadi
+        // Faqat shu joyda snake_case
         [JsonPropertyName("image_path")]
         public string ExePath { get; set; }
 
@@ -157,14 +159,12 @@ namespace NetTrafficMonitor
         [JsonPropertyName("received")]
         public long Received { get; set; }
 
-        // Hisob-kitob uchun, ammo JSONga chiqarmaymiz
         [JsonIgnore]
         public long TotalBytes { get; set; }
 
-        // JSONda aynan "Connections" nomi bilan chiqsin (default shunday)
+        [JsonPropertyName("connections")]
         public List<ConnectionInfo> Connections { get; set; } = new();
 
-        // Filtering uchun
         public ProcStats CloneWithFilter(DateTime cutoff)
         {
             var clone = new ProcStats
@@ -181,20 +181,32 @@ namespace NetTrafficMonitor
                 {
                     clone.Connections.Add(conn);
                     clone.TotalBytes += conn.Bytes;
-                    if (conn.Direction == "Inbound") clone.Received += conn.Bytes;
+                    if (conn.Direction == "inbound") clone.Received += conn.Bytes;
                     else clone.Sent += conn.Bytes;
                 }
             }
+
             return clone;
         }
     }
 
+
     public class ConnectionInfo
     {
+        [JsonPropertyName("timestamp")]
         public DateTime Timestamp { get; set; }
+
+        [JsonPropertyName("direction")]
         public string Direction { get; set; }
+
+        [JsonPropertyName("local")]
         public string Local { get; set; }
+
+        [JsonPropertyName("remote")]
         public string Remote { get; set; }
+
+        [JsonPropertyName("bytes")]
         public long Bytes { get; set; }
     }
+
 }
